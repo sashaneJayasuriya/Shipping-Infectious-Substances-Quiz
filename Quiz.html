@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipping Infectious Substances Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Light Blue-Gray */
+        }
+        .quiz-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 24px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        .question-card {
+            background-color: #fefce8; /* Yellow-50 */
+            border-left: 5px solid #fbbf24; /* Amber-400 */
+            padding: 20px;
+            margin-bottom: 24px;
+            border-radius: 8px;
+        }
+        .answer-option {
+            background-color: #f0f9ff; /* Sky-50 */
+            border: 1px solid #bae6fd; /* Sky-200 */
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .answer-option:hover {
+            background-color: #e0f2fe; /* Sky-100 */
+        }
+        .answer-option.selected {
+            background-color: #bfdbfe; /* Blue-200 */
+            border-color: #3b82f6; /* Blue-500 */
+        }
+        .answer-option.correct {
+            background-color: #dcfce7; /* Green-100 */
+            border-color: #22c55e; /* Green-500 */
+        }
+        .answer-option.incorrect {
+            background-color: #fee2e2; /* Red-100 */
+            border-color: #ef4444; /* Red-500 */
+        }
+        .rationale {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f7fee7; /* Lime-50 */
+            border-left: 4px solid #a3e635; /* Lime-400 */
+            border-radius: 6px;
+            font-size: 0.9em;
+            color: #4f46e5; /* Indigo-600 */
+            display: none;
+        }
+        .rationale.show {
+            display: block;
+        }
+        .hint {
+            margin-top: 15px;
+            font-style: italic;
+            color: #64748b; /* Slate-500 */
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4">
+
+    <div class="quiz-container">
+        <h1 class="text-3xl font-bold text-center text-blue-700 mb-8">Shipping Infectious Substances Quiz</h1>
+        <div id="quiz-display">
+            </div>
+        <button id="next-question-btn" class="mt-8 mx-auto block px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            Next Question
+        </button>
+    </div>
+
+    <script>
+        // Quiz data embedded directly in the HTML
+        const quizData = {
+          "questions": [
+            {
+              "question": "You are shipping a substance classified as 'Biological Substance, Category B'. Which documents are required?",
+              "answerOptions": [
+                {
+                  "text": "An Air Waybill only.",
+                  "rationale": "Category B substances do not require a full Shipper's Declaration for Dangerous Goods, but an Air Waybill with specific information is always necessary for air transport.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "An Air Waybill and a Shipper's Declaration for Dangerous Goods (DGD).",
+                  "rationale": "The Shipper's Declaration for Dangerous Goods is specifically required for Category A substances, not Category B.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "A Shipper's Declaration for Dangerous Goods (DGD) only.",
+                  "rationale": "An Air Waybill is a standard document required for all air shipments, regardless of whether a DGD is needed.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "No special documentation is needed.",
+                  "rationale": "Even though it's not the highest risk category, specific information must be provided on an Air Waybill for Category B shipments.",
+                  "isCorrect": false
+                }
+              ],
+              "hint": "Think about whether this category is considered 'dangerous goods' for the purpose of the main declaration form."
+            },
+            {
+              "question": "When completing an Air Waybill for a Category A infectious substance, what must be stated in the 'Handling Information' box?",
+              "answerOptions": [
+                {
+                  "text": "The UN number and proper shipping name.",
+                  "rationale": "This information is required, but it belongs in the 'Nature and Quantity of Goods' section, not 'Handling Information'.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "'Dangerous Goods - As per Associated Shipper's Declaration' and 'Cargo Aircraft Only'.",
+                  "rationale": "These two statements are mandatory in the handling information section to declare the dangerous nature of the goods and specify the transport limitation.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "The name and phone number of the responsible person.",
+                  "rationale": "Providing a responsible person's contact details is a key requirement for Category B substances, not Category A, on the Air Waybill.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "'Exempt specimens' and the number of boxes.",
+                  "rationale": "This information is for shipments that are exempt from the regulations, not for high-risk Category A substances.",
+                  "isCorrect": false
+                }
+              ],
+              "hint": "This section needs to alert the carrier to both the nature of the goods and the type of aircraft required."
+            },
+            {
+              "question": "The Shipper's Declaration for Dangerous Goods (DGD) form has a specific visual requirement. What is it?",
+              "answerOptions": [
+                {
+                  "text": "It must be printed on yellow paper.",
+                  "rationale": "The regulations specify white paper for the form itself to ensure the text is clearly legible.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "It must be printed with red diagonal striations (stripes) on the borders.",
+                  "rationale": "The red striped borders are a mandatory feature of the DGD, making it easily identifiable as a dangerous goods document.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "It must have a biohazard symbol watermark.",
+                  "rationale": "While the package itself requires a biohazard label, the declaration form itself does not have a watermark requirement.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "All text on the form must be printed in red ink.",
+                  "rationale": "The text on the form should be printed in black for clarity; only the border striations are required to be red.",
+                  "isCorrect": false
+                }
+              ],
+              "hint": "Look for a feature that makes the form immediately stand out. It involves a specific color."
+            },
+            {
+              "question": "How many completed and signed copies of the Shipper's Declaration for Dangerous Goods must be provided to the operator (the airline or carrier)?",
+              "answerOptions": [
+                {
+                  "text": "One",
+                  "rationale": "One copy is for the shipper's records, but the operator requires more than this.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "Two",
+                  "rationale": "The regulations require that the shipper completes three total copies: one for themselves and two for the operator.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "Three",
+                  "rationale": "Three copies are completed in total, but only two of them are handed to the operator.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "Four",
+                  "rationale": "This number is not specified in the regulations; only three total copies are required.",
+                  "isCorrect": false
+                }
+              ],
+              "hint": "The shipper needs to keep a copy, and the operator needs copies for its records and the journey."
+            },
+            {
+              "question": "A shipment of Category A infectious substance weighs 60 grams. Which aircraft limitation applies?",
+              "answerOptions": [
+                {
+                  "text": "It can be shipped on either a passenger or cargo aircraft.",
+                  "rationale": "The limit for passenger aircraft is 50 g, so a 60 g package exceeds this limit.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "It must be shipped on a 'Cargo Aircraft Only'.",
+                  "rationale": "Quantities exceeding 50 g or 50 mL for Category A substances must be restricted to cargo aircraft.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "The weight does not matter, only the volume.",
+                  "rationale": "The regulations specify limits for both weight (grams) for solids and volume (milliliters) for liquids.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "It cannot be shipped by air.",
+                  "rationale": "The shipment is permissible by air, but it is restricted to a specific type of aircraft due to its weight.",
+                  "isCorrect": false
+                }
+              ],
+              "hint": "Consider the weight and volume limits that distinguish between passenger and cargo aircraft."
+            },
+            {
+              "question": "When filling out the DGD, what is the correct 'Class or Division' for a Category A infectious substance and for Dry Ice (used as a refrigerant) respectively?",
+              "answerOptions": [
+                {
+                  "text": "6.2 for infectious substance, 9 for dry ice.",
+                  "rationale": "Class 6.2 is designated for infectious substances, and Class 9 is for miscellaneous dangerous goods, which includes dry ice (Carbon dioxide, solid).",
+                  "isCorrect": true
+                },
+                {
+                  "text": "9 for infectious substance, 6.2 for dry ice.",
+                  "rationale": "This option reverses the correct classifications for the two types of dangerous goods.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "Both are Class 6.2.",
+                  "rationale": "Only the infectious substance is classified as 6.2; dry ice has its own distinct classification.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "Both are Class 9.",
+                  "rationale": "Only the dry ice is classified as 9; the infectious substance has a specific class for biohazards.",
+                  "isCorrect": false
+                }
+              ],
+              "hint": "These two materials fall into different dangerous goods classes, one for biohazards and one for miscellaneous hazards."
+            },
+            {
+              "question": "On the Air Waybill for a shipment of 'Exempt human specimens', what information is required in the 'Nature and Quantity of Goods' box?",
+              "answerOptions": [
+                {
+                  "text": "'Biological Substance, Category B, UN 3373'.",
+                  "rationale": "This description is for a Category B substance, which has more stringent requirements than an exempt one.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "'Exempt specimens'.",
+                  "rationale": "This is the precise and sufficient description required for substances that are exempt from the dangerous goods regulations.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "'Laboratory samples'.",
+                  "rationale": "This description is specifically used for Category A infectious substances.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "The name and phone number of a responsible person.",
+                  "rationale": "This information belongs in the 'Handling Information' section, primarily for Category B shipments.",
+                  "isCorrect": false
+                }
+              ],
+              "hint": "For exempt items, the description is simple and doesn't require UN numbers or technical names."
+            },
+            {
+              "question": "Who must sign the Shipper's Declaration for Dangerous Goods?",
+              "answerOptions": [
+                {
+                  "text": "The courier company's representative.",
+                  "rationale": "The courier is the operator/carrier; the legal responsibility for the declaration lies with the person sending the package.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "The shipper.",
+                  "rationale": "The DGD is a legal contract between the shipper and the operator, and it must be signed by the shipper to certify its accuracy.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "The receiving laboratory's head.",
+                  "rationale": "The consignee (receiver) is not responsible for declaring the contents of the package being sent to them.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "A certified IATA agent.",
+                  "rationale": "While an IATA agent may assist, the ultimate legal responsibility and the signature must come from the shipper.",
+                  "isCorrect": false
+                }
+              ],
+              "hint": "The signature represents a legal contract and certifies that the information is accurate."
+            },
+            {
+              "question": "If you need to make a correction on the Shipper's Declaration for Dangerous Goods after it has been filled out, what is the best practice?",
+              "answerOptions": [
+                {
+                  "text": "Use correction fluid to cover the mistake and write over it.",
+                  "rationale": "Correction fluid can obscure information and may lead to the rejection of the document; it is not a permitted method.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "Complete a new, clean form.",
+                  "rationale": "This is the best practice to ensure the document is clear, legible, and free from any potential misinterpretation.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "Cross out the error and have the courier sign next to it.",
+                  "rationale": "Any alteration must be signed by the shipper, not the courier, as the shipper is the one certifying the contents.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "Leave the error, as no alterations are allowed.",
+                  "rationale": "An inaccurate form is a violation of regulations; alterations are technically permitted if signed by the shipper, but starting fresh is better.",
+                  "isCorrect": false
+                }
+              ],
+              "hint": "Although alterations are permitted with a signature, think about what minimizes the risk of confusion or rejection."
+            },
+            {
+              "question": "What key piece of contact information must be included in the 'Additional Handling Information' section of the DGD?",
+              "answerOptions": [
+                {
+                  "text": "The shipper's email address.",
+                  "rationale": "While useful, an email address does not provide the immediate contact capability required in an emergency situation.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "The full name and 24-hour phone number of a responsible person.",
+                  "rationale": "This ensures that a knowledgeable person can be contacted at any time of day or night in case of an incident during transport.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "The receiving institution's main office phone number.",
+                  "rationale": "A general office number may not be monitored 24/7 and the person answering may not know about the specific shipment.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "The courier's dispatch number.",
+                  "rationale": "The courier is already aware of the shipment; this section is for providing an expert contact from the shipper's side.",
+                  "isCorrect": false
+                }
+              ],
+              "hint": "In case of an emergency, authorities need to reach someone who is knowledgeable about the shipment at any time."
+            }
+          ]
+        };
+
+        let currentQuestionIndex = 0;
+        let selectedOption = null;
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function displayQuestion() {
+            const quizDisplay = document.getElementById('quiz-display');
+            quizDisplay.innerHTML = ''; // Clear previous question
+
+            if (currentQuestionIndex >= quizData.questions.length) {
+                quizDisplay.innerHTML = '<p class="text-xl text-center font-semibold text-blue-700">Quiz Completed! Great job!</p>';
+                document.getElementById('next-question-btn').style.display = 'none';
+                return;
+            }
+
+            const questionData = quizData.questions[currentQuestionIndex];
+            selectedOption = null; // Reset selected option for new question
+
+            const questionCard = document.createElement('div');
+            questionCard.className = 'question-card';
+
+            const questionText = document.createElement('p');
+            questionText.className = 'text-lg font-semibold text-gray-800 mb-4';
+            questionText.textContent = `Question ${currentQuestionIndex + 1}: ${questionData.question}`;
+            questionCard.appendChild(questionText);
+
+            const optionsContainer = document.createElement('div');
+            optionsContainer.className = 'space-y-3';
+
+            const shuffledOptions = shuffleArray([...questionData.answerOptions]);
+
+            shuffledOptions.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'answer-option';
+                optionDiv.textContent = option.text;
+                optionDiv.dataset.index = index; // Store original index if needed, or simply use data-correct for checking
+                
+                optionDiv.addEventListener('click', () => {
+                    if (selectedOption === null) { // Only allow selection if not already answered
+                        selectedOption = optionDiv;
+                        document.querySelectorAll('.answer-option').forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+                        optionDiv.classList.add('selected');
+                        checkAnswer(option, optionDiv);
+                    }
+                });
+                optionsContainer.appendChild(optionDiv);
+            });
+            questionCard.appendChild(optionsContainer);
+
+            const hintText = document.createElement('p');
+            hintText.className = 'hint';
+            hintText.textContent = `Hint: ${questionData.hint}`;
+            questionCard.appendChild(hintText);
+
+            quizDisplay.appendChild(questionCard);
+
+            document.getElementById('next-question-btn').textContent = 'Next Question';
+        }
+
+        function checkAnswer(selectedOptionData, selectedOptionDiv) {
+            const rationaleDiv = document.createElement('div');
+            rationaleDiv.className = 'rationale show';
+            rationaleDiv.textContent = `Rationale: ${selectedOptionData.rationale}`;
+
+            selectedOptionDiv.parentNode.appendChild(rationaleDiv); // Append rationale below the options
+
+            if (selectedOptionData.isCorrect) {
+                selectedOptionDiv.classList.add('correct');
+            } else {
+                selectedOptionDiv.classList.add('incorrect');
+                // Highlight the correct answer if an incorrect one was chosen
+                const currentQuestionOptions = quizData.questions[currentQuestionIndex].answerOptions;
+                currentQuestionOptions.forEach(option => {
+                    if (option.isCorrect) {
+                        const correctOptionDiv = Array.from(selectedOptionDiv.parentNode.children).find(
+                            el => el.textContent === option.text
+                        );
+                        if (correctOptionDiv) {
+                            correctOptionDiv.classList.add('correct');
+                        }
+                    }
+                });
+            }
+
+            // Disable further clicks on options after answering
+            document.querySelectorAll('.answer-option').forEach(opt => {
+                opt.style.pointerEvents = 'none';
+            });
+            document.getElementById('next-question-btn').disabled = false; // Enable next button
+        }
+
+        document.getElementById('next-question-btn').addEventListener('click', () => {
+            if (selectedOption !== null || currentQuestionIndex === quizData.questions.length) {
+                currentQuestionIndex++;
+                displayQuestion();
+                document.getElementById('next-question-btn').disabled = true; // Disable until answer is selected
+            }
+        });
+
+        // Initialize quiz
+        displayQuestion();
+        document.getElementById('next-question-btn').disabled = true; // Disable next button initially
+    </script>
+</body>
+</html>
